@@ -22,6 +22,7 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(20), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(60), nullable=False)
+    is_admin = db.Column(db.Boolean, default=False)  # 추가: 관리자 여부
 
     def check_password(self, password):
         return check_password_hash(self.password, password)
@@ -49,6 +50,14 @@ class UpdateAccountForm(FlaskForm):
 
 class DeleteAccountForm(FlaskForm):
     submit = SubmitField('Delete Account')
+
+class Product(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.String(200))
+    # 추가 필드 및 관계 설정
+    admin_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    admin = db.relationship('User', backref=db.backref('products', lazy=True))
 
 @app.route("/")
 def home():
@@ -114,6 +123,65 @@ def delete_account():
 @app.route("/faq")
 def faq():
     return render_template('faq.html', title='FAQ')
+
+# 추가된 관리자 전용 페이지와 기능
+@app.route("/admin")
+@login_required
+def admin():
+    if current_user.is_admin:
+        products = Product.query.filter_by(admin_id=current_user.id).all()
+        return render_template('admin.html', title='Admin Panel', products=products)
+    else:
+        flash('You do not have permission to access this page.', 'danger')
+        return redirect(url_for('home'))
+
+@app.route("/add_product", methods=['GET', 'POST'])
+@login_required
+def add_product():
+    form = ProductForm()
+    if form.validate_on_submit():
+        product = Product(
+            name=form.name.data,
+            description=form.description.data,
+            admin_id=current_user.id
+        )
+        db.session.add(product)
+        db.session.commit()
+        flash('Product added successfully!', 'success')
+        return redirect(url_for('admin'))
+    return render_template('add_product.html', title='Add Product', form=form)
+
+@app.route("/edit_product/<int:product_id>", methods=['GET', 'POST'])
+@login_required
+def edit_product(product_id):
+    product = Product.query.get_or_404(product_id)
+    if product.admin_id == current_user.id:
+        form = ProductForm()
+        if form.validate_on_submit():
+            product.name = form.name.data
+            product.description = form.description.data
+            db.session.commit()
+            flash('Product updated successfully!', 'success')
+            return redirect(url_for('admin'))
+        elif request.method == 'GET':
+            form.name.data = product.name
+            form.description.data = product.description
+        return render_template('edit_product.html', title='Edit Product', form=form)
+    else:
+        flash('You do not have permission to edit this product.', 'danger')
+        return redirect(url_for('admin'))
+
+@app.route("/delete_product/<int:product_id>", methods=['POST'])
+@login_required
+def delete_product(product_id):
+    product = Product.query.get_or_404(product_id)
+    if product.admin_id == current_user.id:
+        db.session.delete(product)
+        db.session.commit()
+        flash('Product deleted successfully!', 'success')
+    else:
+        flash('You do not have permission to delete this product.', 'danger')
+    return redirect(url_for('admin'))
 
 if __name__ == "__main__":
     app.run(debug=True)
