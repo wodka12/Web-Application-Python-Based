@@ -47,6 +47,9 @@ class UpdateAccountForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
     submit = SubmitField('Update')
 
+class DeleteAccountForm(FlaskForm):
+    submit = SubmitField('Delete Account')
+
 @app.route("/")
 def home():
     return render_template('home.html')
@@ -94,6 +97,19 @@ def account():
         form.username.data = current_user.username
         form.email.data = current_user.email
     return render_template('account.html', title='Account', form=form)
+
+@app.route("/delete_account", methods=['GET', 'POST'])
+@login_required
+def delete_account():
+    form = DeleteAccountForm()
+    if form.validate_on_submit():
+        # Delete the user account and log out
+        db.session.delete(current_user)
+        db.session.commit()
+        logout_user()
+        flash('Your account has been deleted!', 'success')
+        return redirect(url_for('home'))
+    return render_template('delete_account.html', title='Delete Account', form=form)
 
 @app.route("/faq")
 def faq():
