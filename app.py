@@ -7,7 +7,7 @@ from wtforms.validators import DataRequired, Length, Email, EqualTo
 from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'secretkey'
+app.config['SECRET_KEY'] = 'your-secret-key'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://samuel001:tlfqjf12!@samueldb001.mysql.database.azure.com/users'
 db = SQLAlchemy(app)
 
