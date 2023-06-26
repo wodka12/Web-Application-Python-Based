@@ -1,5 +1,17 @@
+<!DOCTYPE html>
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Welcome to the Home Page!</h1>
+<div style="text-align: center;">
+    <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" style="width:500px; height:350px;">
+</div>
+<h1>Welcome to the Fishing Shop!</h1>
+<div>
+    {% for product in products %}
+    <p>Product Name: {{ product.name }}</p>
+    <p>Product Description: {{ product.description }}</p>
+    <hr>
+    {% endfor %}
+</div>
 {% endblock %}
+</html>
