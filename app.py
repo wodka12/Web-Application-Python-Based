@@ -6,6 +6,7 @@ from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, Length, Email, EqualTo
 from werkzeug.security import generate_password_hash, check_password_hash
 import pymysql
+from forms import ProductForm
 
 pymysql.install_as_MySQLdb()
 
@@ -61,7 +62,8 @@ class Product(db.Model):
 
 @app.route("/")
 def home():
-    return render_template('home.html')
+    products = Product.query.all()
+    return render_template('home.html', products=products)
 
 @app.route("/register", methods=['GET', 'POST'])
 def register():
