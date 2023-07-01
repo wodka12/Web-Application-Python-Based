@@ -10,6 +10,7 @@ from forms import ProductForm
 
 pymysql.install_as_MySQLdb()
 
+
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your-secret-key'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://samuel001:tlfqjf12!@samueldb001.mysql.database.azure.com/users'
