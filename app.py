@@ -7,13 +7,17 @@ from wtforms.validators import DataRequired, Length, Email, EqualTo
 from werkzeug.security import generate_password_hash, check_password_hash
 import pymysql
 from forms import ProductForm
+import configparser
 
 pymysql.install_as_MySQLdb()
 
+# DB config
+config = configparser.ConfigParser()
+config.read('config.ini')
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your-secret-key'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://samuel001:tlfqjf12!@samueldb001.mysql.database.azure.com/users'
+app.config['SQLALCHEMY_DATABASE_URI'] = f"mysql://{config.get('MYSQL','USER')}:{config.get('MYSQL','PASSWORD')}@{config.get('MYSQL','HOST')}/users"
 db = SQLAlchemy(app)
 
 login_manager = LoginManager(app)
