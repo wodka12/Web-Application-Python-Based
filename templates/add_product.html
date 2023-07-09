@@ -5,10 +5,13 @@
   <form method="post">
     {{ form.hidden_tag() }}
     <div>
-      {{ form.name.label }} {{ form.name() }}
+      {{ form.name.label }} {{ form.name(maxlength="30") }}
     </div>
     <div>
-      {{ form.description.label }} {{ form.description() }}
+      {{ form.price.label }} {{ form.price(type="number", min="0", step="1") }}
+    </div>
+    <div>
+      {{ form.description.label }} {{ form.description(maxlength="190") }}
     </div>
     <div>
       <input type="submit" value="Add Product">

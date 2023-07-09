@@ -19,11 +19,9 @@
                     <a class="nav-link" href="{{ url_for('faq') }}">FAQ</a>
                 </li>
                 <!-- Add this block for Admin Panel menu -->
-                {% if current_user.is_authenticated and current_user.is_admin %}
                 <li class="nav-item">
                     <a class="nav-link" href="{{ url_for('admin') }}">Admin Panel</a>
                 </li>
-                {% endif %}
                 <!-- Block ends here -->
             </ul>
             <ul class="navbar-nav ml-auto">

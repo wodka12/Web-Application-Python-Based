@@ -61,6 +61,7 @@ class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     description = db.Column(db.String(200))
+    price = db.Column(db.Integer, nullable=False)
     admin_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     admin = db.relationship('User', backref=db.backref('products', lazy=True))
 
@@ -147,6 +148,7 @@ def add_product():
     if form.validate_on_submit():
         product = Product(
             name=form.name.data,
+            price=form.price.data,
             description=form.description.data,
             admin_id=current_user.id
         )
@@ -164,12 +166,14 @@ def edit_product(product_id):
         form = ProductForm()
         if form.validate_on_submit():
             product.name = form.name.data
+            product.price = form.price.data
             product.description = form.description.data
             db.session.commit()
             flash('Product updated successfully!', 'success')
             return redirect(url_for('admin'))
         elif request.method == 'GET':
             form.name.data = product.name
+            form.price.data = product.price
             form.description.data = product.description
         return render_template('edit_product.html', title='Edit Product', form=form)
     else:
