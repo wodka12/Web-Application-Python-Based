@@ -28,7 +28,7 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(20), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(60), nullable=False)
-    is_admin = db.Column(db.Boolean, default=False)  # 추가: 관리자 여부
+    is_admin = db.Column(db.Boolean, default=False)
 
     def check_password(self, password):
         return check_password_hash(self.password, password)
@@ -61,7 +61,6 @@ class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     description = db.Column(db.String(200))
-    # 추가 필드 및 관계 설정
     admin_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     admin = db.relationship('User', backref=db.backref('products', lazy=True))
 
@@ -131,7 +130,6 @@ def delete_account():
 def faq():
     return render_template('faq.html', title='FAQ')
 
-# 추가된 관리자 전용 페이지와 기능
 @app.route("/admin")
 @login_required
 def admin():
